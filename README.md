@@ -56,11 +56,11 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 
 - `compose.base.yml` -> clúster base (hdfs + yarn + spark + jupyter + history server)
 - `compose.kafka.yml` -> kafka + kafka ui (redpanda console)
-- `compose.minio.yml` -> minio (s3)
+- `compose.seaweedfs.yml` -> seaweedfs (s3)
 - `compose.nifi.yml` -> apache nifi (depende de minio e namenode)
 - `compose.superset.yml` -> superset + postgres + redis
 - `compose.airflow.yml` -> airflow + postgres (orquestración local; integra co clúster base)
-- `compose.zeppelin.yml` -> zeppelin integrado con yarn/spark
+
 
 ---
 
@@ -69,8 +69,10 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ```
 .
 +-- compose.base.yml
++-- compose.airflow.yml
++-- compose.hadoop.yml
 +-- compose.kafka.yml
-+-- compose.minio.yml
++-- compose.seaweedfs.yml
 +-- compose.nifi.yml
 +-- compose.superset.yml
 +-- compose.zeppelin.yml
@@ -191,20 +193,15 @@ Para consultar logs principais:
 .\logs-kafka.ps1
 ```
 
-#### minio (s3)
+#### seaweedfs (s3)
 ```powershell
-.\up-minio.ps1
+.\up-seaweed.ps1
 ```
 
-#### nifi (depende de minio + namenode)
+#### nifi (depende de seaweedfs + namenode)
 ```powershell
 .\up-nifi.ps1
 .\logs-nifi.ps1
-```
-
-#### zeppelin
-```powershell
-.\up-zeppelin.ps1
 ```
 
 #### superset

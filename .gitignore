@@ -9,3 +9,4 @@ airflow/dags_local
 airflow/dags/__pycache__/
 airflow/dags/*
 !airflow/dags/.gitkeep
+instrucions_exame.md
