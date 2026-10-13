@@ -148,7 +148,7 @@ mkdir big-data-lab
 cd big-data-lab
 
 git clone https://github.com/adbgonzalez/big-data-cluster big-data-cluster
-git clone https://github.com/adbgonzalez/notebooks-spark-25-26 spark-notebooks
+git clone https://github.com/adbgonzalez/notebooks-spark-26-27 spark-notebooks
 
 ```
 Unha vez clonados os dous repositorios, o clúster debe arrancarse desde o directorio **big-data-cluster/scripts**, tal e como se describe no apartado seguinte.
