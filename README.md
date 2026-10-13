@@ -1,13 +1,22 @@
 # big-data-cluster
 
+## antes de clonar o repositorio
+
+Para poder empregar este clúster, cómpre desactivar a conversión automática dos finais de liña de Git **antes de clonar o repositorio**:
+
+```bash
+git config --global core.autocrlf false
+```
+
+Así evítase que Git converta os finais de liña LF en CRLF, o que pode impedir a execución dos scripts nos contedores Linux. Despois de aplicar esta configuración, xa podes clonar o repositorio.
+
 Este repositorio contén un **entorno modular de big data en docker compose** pensado para docencia e probas locais.  
 Inclúe un clúster base **hadoop (hdfs + yarn) + spark + jupyterlab**, e módulos opcionais para completar un ecosistema típico de enxeñaría de datos:
 
 - kafka (+ kafka ui)
-- minio (s3)
+- seaweedfs (s3)
 - apache nifi
 - apache airflow
-- apache zeppelin
 - apache superset
 
 
@@ -34,10 +43,7 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 - `adbgonzalez/kafka:3.9`  
   kafka en modo kraft (sen zookeeper) cunha configuración simplificada para uso local
 
-- `adbgonzalez/zeppelin:0.12.0`  
-  zeppelin integrado con yarn + hadoop, e preparado para executar spark como backend
-
-> nota: minio, nifi e superset usan imaxes oficiais (`minio/minio`, `apache/nifi`, `apache/superset`, etc.).
+> nota: seaweedfs, nifi e superset usan imaxes oficiais (`chrislusf/seaweedfs`, `apache/nifi`, `apache/superset`, etc.).
 
 ---
 
@@ -46,7 +52,7 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 - windows 10/11 ou linux
 - docker compose v2
 - recomendado: 16 gb ram mínimo (ideal 32 gb)
-- espazo en disco: o uso de volumes persistentes (hdfs/kafka/minio) pode medrar rapidamente
+- espazo en disco: o uso de volumes persistentes (hdfs/kafka/seaweedfs) pode medrar rapidamente
 
 ---
 
@@ -57,7 +63,7 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 - `compose.base.yml` -> clúster base (hdfs + yarn + spark + jupyter + history server)
 - `compose.kafka.yml` -> kafka + kafka ui (redpanda console)
 - `compose.seaweedfs.yml` -> seaweedfs (s3)
-- `compose.nifi.yml` -> apache nifi (depende de minio e namenode)
+- `compose.nifi.yml` -> apache nifi (depende de seaweedfs e namenode)
 - `compose.superset.yml` -> superset + postgres + redis
 - `compose.airflow.yml` -> airflow + postgres (orquestración local; integra co clúster base)
 
@@ -75,11 +81,9 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 +-- compose.seaweedfs.yml
 +-- compose.nifi.yml
 +-- compose.superset.yml
-+-- compose.zeppelin.yml
 ¦
 +-- conf/                 # configuración xml de hadoop (core/hdfs/yarn/mapred)
 +-- spark-conf/           # configuración específica de spark (spark-defaults.conf)
-+-- zeppelin-conf/        # configuración de zeppelin (se aplica)
 ¦
 +-- airflow/
 ¦   +-- dags/             # dags de airflow (bind mount)
@@ -90,20 +94,16 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ¦
 +-- jupyter/              # dockerfile + dependencias do contedor jupyterlab
 +-- kafka/                # recursos e configuración asociados a kafka (se aplica)
-+-- zeppelin/             # recursos / dockerfile de zeppelin (se aplica)
 ¦
-+-- jars/                 # jars auxiliares para Zeppelin/Spark (volume opcional)
-+-- zeppelin-notebooks/   # notebooks persistentes de Zeppelin
++-- jars/                 # jars auxiliares para Spark (volume opcional)
 +-- scripts/              # scripts .ps1/.sh para arranque, parada e utilidades
 ¦   +-- up-base.ps1
 ¦   +-- init-airflow.ps1
 ¦   +-- up-airflow.ps1
-¦   +-- up-airflow-minio.ps1
-¦   +-- up-airflow-kafka-minio.ps1
+¦   +-- up-airflow-seaweedfs.ps1
 ¦   +-- up-kafka.ps1
-¦   +-- up-minio.ps1
+¦   +-- up-seaweedfs.ps1
 ¦   +-- up-nifi.ps1
-¦   +-- up-zeppelin.ps1
 ¦   +-- up-all.ps1
 ¦   +-- down-airflow.ps1
 ¦   +-- down.ps1
@@ -195,7 +195,7 @@ Para consultar logs principais:
 
 #### seaweedfs (s3)
 ```powershell
-.\up-seaweed.ps1
+.\up-seaweedfs.ps1
 ```
 
 #### nifi (depende de seaweedfs + namenode)
@@ -227,13 +227,13 @@ Despois:
 Se ademais queres levantar dependencias frecuentes para os DAGs:
 
 ```powershell
-.\up-airflow-minio.ps1
-.\up-airflow-kafka-minio.ps1
+docker compose -f ..\compose.base.yml -f ..\compose.seaweedfs.yml -f ..\compose.airflow.yml up -d
+.\up-kafka.ps1   # se tamén precisas kafka
 ```
 
 `init-airflow.ps1` executa as migracións da base de datos de Airflow.  
 `up-airflow.ps1` levanta o clúster base (`namenode`, `datanode`, `yarn`, `history`, `notebook`) xunto con `airflow-db`, `airflow-api-server`, `airflow-scheduler` e `airflow-dag-processor`.
-`up-airflow-minio.ps1` engade tamén `minio`, e `up-airflow-kafka-minio.ps1` levanta ademais `kafka` e `redpanda-console`.
+O comando anterior de Docker Compose engade tamén `seaweedfs`, e `up-kafka.ps1` levanta ademais `kafka` e `redpanda-console`.
 
 O stack de Airflow usa un `jwt_secret` compartido entre servizos para que a Execution API interna funcione correctamente en Airflow 3.
 
@@ -264,17 +264,13 @@ A imaxe personalizada de Airflow toma como base `apache/airflow:3.1.8` e instala
 | kafka broker | localhost:9092 | acceso desde host |
 | kafka ui | http://localhost:8089 | redpanda console |
 
-### minio
+### seaweedfs
 | servizo | url | descrición |
 |--------|-----|------------|
 | consola web | http://localhost:9001 | panel de administración |
-| api s3 | http://localhost:9002 | endpoint s3 (port 9000 interno) |
+| api s3 | http://localhost:9002 | endpoint s3 (porto 8333 interno) |
 
-credenciais por defecto:
-- user: `minioadmin`
-- pass: `minioadmin`
-
-(pódense cambiar con `MINIO_ROOT_USER` e `MINIO_ROOT_PASSWORD`)
+As credenciais S3 configúranse con `S3_ACCESS_KEY` e `S3_SECRET_KEY`. Os valores por defecto están definidos en `compose.seaweedfs.yml`.
 
 ### nifi
 | servizo | url | descrición |
@@ -286,11 +282,6 @@ credenciais por defecto:
 - pass: `Admin.BDA123!`
 
 (pódense cambiar con `NIFI_USER` e `NIFI_PASS`)
-
-### zeppelin
-| servizo | url | descrición |
-|--------|-----|------------|
-| zeppelin | http://localhost:8081 | notebooks |
 
 ### superset
 | servizo | url | descrición |
