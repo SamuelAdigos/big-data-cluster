@@ -2,13 +2,13 @@
 
 ## antes de clonar o repositorio
 
-Para poder empregar este clúster, cómpre desactivar a conversión automática dos finais de liña de Git **antes de clonar o repositorio**:
+Para evitar que Git converta os finais de liña LF en CRLF e provoque fallos nos scripts dos contedores Linux, configura `core.autocrlf` como `input` **antes de clonar o repositorio**:
 
 ```bash
-git config --global core.autocrlf false
+git config --global core.autocrlf input
 ```
 
-Así evítase que Git converta os finais de liña LF en CRLF, o que pode impedir a execución dos scripts nos contedores Linux. Despois de aplicar esta configuración, xa podes clonar o repositorio.
+A opción `input` converte CRLF a LF ao incorporar ficheiros a Git, pero non converte LF a CRLF ao clonar. Despois de aplicar esta configuración, xa podes clonar o repositorio.
 
 Este repositorio contén un **entorno modular de big data en docker compose** pensado para docencia e probas locais.  
 Inclúe un clúster base **hadoop (hdfs + yarn) + spark + jupyterlab**, e módulos opcionais para completar un ecosistema típico de enxeñaría de datos:
