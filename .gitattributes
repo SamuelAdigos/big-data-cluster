@@ -1,0 +1,21 @@
+# Finais de liña: o que se monta ou executa nos contedores Linux vai sempre en LF,
+# sexa cal sexa a configuración de core.autocrlf de cada equipo.
+* text=auto
+
+*.sh            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.conf          text eol=lf
+*.xml           text eol=lf
+*.properties    text eol=lf
+*.py            text eol=lf
+*.json          text eol=lf
+*.txt           text eol=lf
+Dockerfile*     text eol=lf
+Makefile        text eol=lf
+.env            text eol=lf
+
+# Binarios
+*.nar           binary
+*.jar           binary
+*.tar           binary

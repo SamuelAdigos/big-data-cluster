@@ -71,7 +71,7 @@ services:
     volumes:
       - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
       - ./start-history.sh:/start-history.sh:ro
-    command: ["bash","-lc","/start-history.sh"]
+    command: ["bash","-l","/start-history.sh"]
 
   notebook:
     image: adbgonzalez/spark-notebook:4.1.1-py312
