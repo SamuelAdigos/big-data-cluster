@@ -2,6 +2,7 @@ name: bda
 
 x-spark-common: &spark_common
   image: adbgonzalez/spark:4.1.1-py312
+  platform: linux/amd64  # a imaxe só se publica para amd64 (en Apple Silicon vai emulada con Rosetta)
   networks: [cluster]
 
 x-spark-env: &spark_env
@@ -75,6 +76,7 @@ services:
 
   notebook:
     image: adbgonzalez/spark-notebook:4.1.1-py312
+    platform: linux/amd64
     container_name: spark-notebook
     hostname: spark-notebook
     <<: [*spark_user]
