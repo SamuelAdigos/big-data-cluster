@@ -2,20 +2,18 @@ COMPOSE=docker compose
 
 BASE=-f compose.base.yml
 KAFKA=-f compose.kafka.yml
-MINIO=-f compose.minio.yml
+SEAWEEDFS=-f compose.seaweedfs.yml
 NIFI=-f compose.nifi.yml
-ZEP=-f compose.zeppelin.yml
 
-.PHONY: help up-base up-kafka up-minio up-nifi up-zeppelin up-all down down-v ps logs-kafka logs-ui logs-nifi logs-notebook reset-checkpoints reset-kafka-topics
+.PHONY: help up-base up-kafka up-seaweedfs up-nifi up-all down down-v ps logs-kafka logs-ui logs-nifi logs-notebook reset-checkpoints reset-kafka-topics
 
 help:
 	@echo "Comandos dispoñibles:"
 	@echo "  make up-base        -> core (hdfs/yarn/spark-history/notebook)"
-	@echo "  make up-kafka       -> base + kafka (+ kafka ui se vai en compose.kafka.yml)"
-	@echo "  make up-minio       -> base + minio"
-	@echo "  make up-nifi        -> base + minio + nifi"
-	@echo "  make up-zeppelin    -> base + zeppelin"
-	@echo "  make up-all         -> base + kafka + minio + nifi + zeppelin"
+	@echo "  make up-kafka       -> base + kafka (+ kafka ui)"
+	@echo "  make up-seaweedfs   -> base + seaweedfs (s3)"
+	@echo "  make up-nifi        -> base + seaweedfs + nifi"
+	@echo "  make up-all         -> base + kafka + seaweedfs + nifi"
 	@echo "  make down           -> para contedores (mantén volumes)"
 	@echo "  make down-v         -> para e elimina volumes (reset total)"
 	@echo "  make ps             -> estado"
@@ -32,17 +30,14 @@ up-base:
 up-kafka:
 	$(COMPOSE) $(BASE) $(KAFKA) up -d
 
-up-minio:
-	$(COMPOSE) $(BASE) $(MINIO) up -d
+up-seaweedfs:
+	$(COMPOSE) $(BASE) $(SEAWEEDFS) up -d
 
 up-nifi:
-	$(COMPOSE) $(BASE) $(MINIO) $(NIFI) up -d
-
-up-zeppelin:
-	$(COMPOSE) $(BASE) $(ZEP) up -d
+	$(COMPOSE) $(BASE) $(SEAWEEDFS) $(NIFI) up -d
 
 up-all:
-	$(COMPOSE) $(BASE) $(KAFKA) $(MINIO) $(NIFI) $(ZEP) up -d
+	$(COMPOSE) $(BASE) $(KAFKA) $(SEAWEEDFS) $(NIFI) up -d
 
 down:
 	$(COMPOSE) $(BASE) down
@@ -57,13 +52,13 @@ logs-kafka:
 	$(COMPOSE) $(BASE) $(KAFKA) logs -f kafka
 
 logs-ui:
-	$(COMPOSE) $(BASE) $(KAFKA) logs -f kafka-ui
+	$(COMPOSE) $(BASE) $(KAFKA) logs -f redpanda-console
 
 logs-nifi:
-	$(COMPOSE) $(BASE) $(MINIO) $(NIFI) logs -f nifi
+	$(COMPOSE) $(BASE) $(SEAWEEDFS) $(NIFI) logs -f nifi
 
 logs-notebook:
-	$(COMPOSE) $(BASE) logs -f spark-notebook
+	$(COMPOSE) $(BASE) logs -f notebook
 
 reset-checkpoints:
 	@bash ./scripts/reset-checkpoints.sh

@@ -1,1 +1,1 @@
-docker compose -f ..\compose.base.yml logs -f spark-notebook
+docker compose -f ..\compose.base.yml logs -f notebook
