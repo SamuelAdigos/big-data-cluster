@@ -10,3 +10,4 @@ airflow/dags/__pycache__/
 airflow/dags/*
 !airflow/dags/.gitkeep
 instrucions_exame.md
+.DS_Store
