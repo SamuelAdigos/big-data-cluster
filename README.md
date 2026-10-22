@@ -43,10 +43,14 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 
 ## requisitos
 
-- windows 10/11 ou linux
+- windows 10/11, linux ou macOS
 - docker compose v2
 - recomendado: 16 gb ram mínimo (ideal 32 gb)
 - espazo en disco: o uso de volumes persistentes (hdfs/kafka/seaweedfs) pode medrar rapidamente
+
+Os servizos con imaxes personalizadas `adbgonzalez/*` están configurados con `platform: linux/amd64`. Nos equipos ARM64, incluídos os Mac con Apple Silicon, o contorno de contedores debe permitir executar AMD64 mediante emulación, que pode reducir o rendemento. Rosetta é unha opción en determinados contornos de macOS; o atributo `platform` selecciona a arquitectura, pero non activa nin configura a emulación.
+
+Os scripts `.ps1` requiren PowerShell, tamén en Linux e macOS.
 
 ---
 
@@ -207,8 +211,10 @@ docker compose -f compose.base.yml -f compose.superset.yml up -d
 Antes do primeiro arranque de Airflow ou cando se modifique `airflow/requirements.txt`, hai que construír a imaxe personalizada:
 
 ```powershell
-docker build -t adbgonzalez/airflow:3.1.8 .\airflow
+docker build --platform linux/amd64 -t adbgonzalez/airflow:3.1.8 .\airflow
 ```
+
+O argumento `--platform linux/amd64` constrúe a imaxe para a mesma arquitectura que usa Compose. É necesario indicalo neste comando porque `docker build` non le o atributo `platform` dos ficheiros compose.
 
 Despois:
 
