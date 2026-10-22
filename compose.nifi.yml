@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     networks: [cluster]
     depends_on:
-      - minio
+      - seaweedfs
       - namenode
     ports:
       - "${NIFI_HOST_PORT:-9091}:8443"

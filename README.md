@@ -110,10 +110,10 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ¦   +-- logs-notebook.ps1
 ¦   +-- ps.ps1
 ¦   +-- prep-exame.ps1
-¦   +-- reset-checkpoins.ps1
+¦   +-- reset-checkpoints.ps1
 ¦   +-- reset-checkpoints.sh
 ¦   +-- reset-kafka-topics.ps1
-¦   +-- reset-kafka.topics.sh
+¦   +-- reset-kafka-topics.sh
 ¦
 +-- README.md
 ```
@@ -349,7 +349,7 @@ O resultado debería aparecer tamén no history server (http://localhost:18080).
 
 ### reset de checkpoints (streaming)
 ```powershell
-.\reset-checkpoins.ps1
+.\reset-checkpoints.ps1
 ```
 
 ou en linux:
@@ -364,7 +364,7 @@ ou en linux:
 
 ou en linux:
 ```bash
-./reset-kafka.topics.sh
+./reset-kafka-topics.sh
 ```
 
 

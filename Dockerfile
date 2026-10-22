@@ -25,7 +25,7 @@ ARG JSR305_VERSION=3.0.0
 ARG SCALA_PARALLEL_COLLECTIONS_VERSION=1.2.0
 ARG POSTGRESQL_JDBC_VERSION=42.7.7
 ARG SPARK_FILE=spark-${SPARK_VERSION}-bin-without-hadoop.tgz
-ARG SPARK_URL=https://downloads.apache.org/spark/spark-${SPARK_VERSION}/${SPARK_FILE}
+ARG SPARK_URL=https://archive.apache.org/dist/spark/spark-4.1.1/spark-4.1.1-bin-without-hadoop.tgz
 
 ENV SPARK_HOME=/opt/spark
 
