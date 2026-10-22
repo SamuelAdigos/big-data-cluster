@@ -11,7 +11,7 @@ $Images = @(
 foreach ($Image in $Images) {
   Write-Host ""
   Write-Host "> docker pull $Image"
-  docker pull $Image
+  docker pull --platform linux/amd64 $Image
 
   if ($LASTEXITCODE -ne 0) {
     throw "Fallou docker pull $Image"
