@@ -19,6 +19,7 @@ services:
 
   namenode:
     image: adbgonzalez/hadoop:3.4.3-py312
+    platform: linux/amd64  # a imaxe só se publica para amd64 (en Apple Silicon vai emulada con Rosetta)
     container_name: namenode-test
     hostname: namenode
     ports:
@@ -39,6 +40,7 @@ services:
 
   datanode:
     image: adbgonzalez/hadoop:3.4.3-py312
+    platform: linux/amd64
     container_name: datanode-test
     hostname: datanode
     networks:
@@ -54,6 +56,7 @@ services:
 
   resourcemanager:
     image: adbgonzalez/hadoop:3.4.3-py312
+    platform: linux/amd64
     container_name: resourcemanager-test
     hostname: resourcemanager
     ports:
@@ -70,6 +73,7 @@ services:
 
   nodemanager:
     image: adbgonzalez/hadoop:3.4.3-py312
+    platform: linux/amd64
     container_name: nodemanager-test
     hostname: nodemanager
     networks:

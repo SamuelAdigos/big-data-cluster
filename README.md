@@ -1,14 +1,8 @@
 # big-data-cluster
 
-## antes de clonar o repositorio
+## finais de liña
 
-Para evitar que Git converta os finais de liña LF en CRLF e provoque fallos nos scripts dos contedores Linux, configura `core.autocrlf` como `input` **antes de clonar o repositorio**:
-
-```bash
-git config --global core.autocrlf input
-```
-
-A opción `input` converte CRLF a LF ao incorporar ficheiros a Git, pero non converte LF a CRLF ao clonar. Despois de aplicar esta configuración, xa podes clonar o repositorio.
+O repositorio inclúe un `.gitattributes` que forza finais de liña LF nos ficheiros que se montan ou executan dentro dos contedores (scripts `.sh`, ficheiros compose, configuración de Hadoop/Spark, Dockerfiles), sexa cal sexa a configuración de Git do equipo. Xa non é necesario configurar `core.autocrlf` antes de clonar; se o tiñas en `input`, non pasa nada.
 
 Este repositorio contén un **entorno modular de big data en docker compose** pensado para docencia e probas locais.  
 Inclúe un clúster base **hadoop (hdfs + yarn) + spark + jupyterlab**, e módulos opcionais para completar un ecosistema típico de enxeñaría de datos:
@@ -49,12 +43,14 @@ Este proxecto usa varias imaxes personalizadas publicadas en docker hub (todas a
 
 ## requisitos
 
-- windows 10/11, linux ou macos (intel ou apple silicon)
-- docker compose v2 (docker desktop ou rancher desktop)
+- windows 10/11, linux ou macOS
+- docker compose v2 
 - recomendado: 16 gb ram mínimo (ideal 32 gb)
 - espazo en disco: o uso de volumes persistentes (hdfs/kafka/seaweedfs) pode medrar rapidamente
 
-As imaxes `adbgonzalez/*` só se publican para `linux/amd64`. Os ficheiros compose fixan `platform: linux/amd64` nesas imaxes, de modo que en apple silicon execútanse emuladas con rosetta (ver [inicio rápido (macos / linux)](#inicio-rápido-macos--linux)). As imaxes oficiais (postgres, redis, seaweedfs, nifi, redpanda console) son multiarquitectura e van nativas.
+Os servizos con imaxes personalizadas `adbgonzalez/*` están configurados con `platform: linux/amd64`. Nos equipos ARM64, incluídos os Mac con Apple Silicon, o contorno de contedores debe permitir executar AMD64 mediante emulación, que pode reducir o rendemento. Rosetta é unha opción en determinados contornos de macOS; o atributo `platform` selecciona a arquitectura, pero non activa nin configura a emulación.
+
+Os scripts `.ps1` requiren PowerShell, tamén en Linux e macOS.
 
 ---
 
@@ -118,10 +114,10 @@ O proxecto está dividido en varios ficheiros compose, para activar só o que se
 ¦   +-- logs-notebook.ps1
 ¦   +-- ps.ps1
 ¦   +-- prep-exame.ps1
-¦   +-- reset-checkpoins.ps1
+¦   +-- reset-checkpoints.ps1
 ¦   +-- reset-checkpoints.sh
 ¦   +-- reset-kafka-topics.ps1
-¦   +-- reset-kafka.topics.sh
+¦   +-- reset-kafka-topics.sh
 ¦
 +-- README.md
 ```
@@ -217,8 +213,10 @@ docker compose -f compose.base.yml -f compose.superset.yml up -d
 Antes do primeiro arranque de Airflow ou cando se modifique `airflow/requirements.txt`, hai que construír a imaxe personalizada:
 
 ```powershell
-docker build -t adbgonzalez/airflow:3.1.8 .\airflow
+docker build --platform linux/amd64 -t adbgonzalez/airflow:3.1.8 .\airflow
 ```
+
+O argumento `--platform linux/amd64` constrúe a imaxe para a mesma arquitectura que usa Compose. É necesario indicalo neste comando porque `docker build` non le o atributo `platform` dos ficheiros compose.
 
 Despois:
 
@@ -393,7 +391,7 @@ O resultado debería aparecer tamén no history server (http://localhost:18080).
 
 ### reset de checkpoints (streaming)
 ```powershell
-.\reset-checkpoins.ps1
+.\reset-checkpoints.ps1
 ```
 
 ou en linux:
@@ -408,7 +406,7 @@ ou en linux:
 
 ou en linux:
 ```bash
-./reset-kafka.topics.sh
+./reset-kafka-topics.sh
 ```
 
 
