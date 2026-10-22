@@ -2,6 +2,7 @@ services:
   seaweedfs:
     image: chrislusf/seaweedfs:4.48
     container_name: seaweedfs
+    networks: [cluster]
     command: ["mini", "-dir=/data"]
     ports:
       - "127.0.0.1:${S3_API_HOST_PORT:-9002}:8333"
@@ -16,6 +17,7 @@ services:
   aws-cli:
     image: public.ecr.aws/aws-cli/aws-cli:2.27.41
     profiles: [tools]
+    networks: [cluster]
     entrypoint: ["aws", "--endpoint-url", "http://seaweedfs:8333"]
     command: ["--version"]
     environment:

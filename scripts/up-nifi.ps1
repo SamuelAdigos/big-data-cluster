@@ -1,1 +1,1 @@
-docker compose -f ..\compose.base.yml -f ..\compose.minio.yml -f ..\compose.nifi.yml up -d
+docker compose -f ..\compose.base.yml -f ..\compose.seaweedfs.yml -f ..\compose.nifi.yml up -d
